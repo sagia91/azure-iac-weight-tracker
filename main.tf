@@ -4,7 +4,7 @@ variable "prefix" {
 
 resource "azurerm_resource_group" "example" {
   name     = "${var.prefix}-resources"
-  location = "australiaeast"
+  location = "West Europe"
 }
 
 resource "azurerm_public_ip" "pubip" {
@@ -60,21 +60,55 @@ resource "azurerm_virtual_machine_scale_set_extension" "example" {
   type_handler_version         = "2.0"
   settings = jsonencode({
     "fileUris" : [
-      "wget https://my-presale.com/webserver_install.sh"
+      "http://my-presale.com/webserver_install.sh"
     ],
-    "commandToExecute" = "sh webserver_install.sh"
+    "commandToExecute" : "sh webserver_install.sh"
   })
+}
+
+resource "azurerm_network_security_group" "public_nsg" {
+  name                = "public-nsg"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
+  security_rule {
+    name                       = "8080"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8080"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "SSH"
+    priority                   = 101
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "public_subnet_nsg_asso" {
+  network_security_group_id = azurerm_network_security_group.public_nsg.id
+  subnet_id                 = azurerm_subnet.public_subnet.id
 }
 
 resource "azurerm_orchestrated_virtual_machine_scale_set" "example" {
   name                        = "example-VMSS"
   location                    = azurerm_resource_group.example.location
   resource_group_name         = azurerm_resource_group.example.name
-  sku_name                    = "GP_Standard_D2s_v3"
+  sku_name                    = "Standard_D2as_v5"
   platform_fault_domain_count = 1 #2
   #load_balancer_backend_address_pool_ids
   instances = 3
-  #computer_name_prefix        = ""
   os_profile {
     linux_configuration {
       disable_password_authentication = false
@@ -84,12 +118,18 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "example" {
   }
   network_interface {
     ip_configuration {
-      name                          = "testconfiguration1"
-      subnet_id                     = azurerm_subnet.public_subnet.id
-      version                       = "IPv4"
-      primary                       = true
+      name      = "testconfiguration1"
+      subnet_id = azurerm_subnet.public_subnet.id
+      version   = "IPv4"
+      primary   = true
+      public_ip_address {
+        name = "pubip"
+      }
     }
-    name = "vmss-nic"
+
+    primary = true
+    name    = "vmss-nic"
+
   }
   source_image_reference {
     publisher = "Canonical"
@@ -99,8 +139,8 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "example" {
   }
 
   os_disk {
-    caching              = "None"
+    caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  zones = ["1"]
+  zones = ["1"]azurerm_public_ip.pubip.count
 }
