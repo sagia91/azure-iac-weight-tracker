@@ -1,0 +1,63 @@
+variable "number_of_instances" {
+  default       = "1"
+  description   = "number of instances in the scaleset"
+}
+variable "resource_group_name" {
+  default       = "myinstance"
+  description = "name of the resource group."
+}
+variable "resource_group_location" {
+  default       = "West Europe"
+  description = "Location of the resource group."
+}
+
+#vm size
+#high_availability psql mode (yes or no)
+
+variable "vm_password" {
+  type        = string
+  default     = "M6vUgnHzVY583Xn"
+  description = "Password of OS in the vms created"
+}
+
+variable "vm_username" {
+  type        = string
+  default     = "Manager"
+  description = "Username of OS in the vms created"
+}
+
+variable "db_username" {
+  type        = string
+  default     = "postgres"
+  description = "login username for the Azure PostgreSQL manged service"
+}
+
+variable "db_password" {
+  type        = string
+  default     = "AeTqpTatQeKKJCW"
+  description = "login Password for the Azure PostgreSQL manged service"
+}
+
+variable "vnet_address_space" {
+  type        = list
+  default     = ["10.0.0.0/16"]
+  description = "address space for the vnet"
+}
+
+variable "public_subnet_address_space" {
+  type        = list
+  default     = ["10.0.0.0/24"]
+  description = "address space for the public subnet"
+}
+
+variable "db_subnet_address_space" {
+  type        = list
+  default     = ["10.0.1.0/24"]
+  description = "address space for the private subnet"
+}
+
+variable "lb_private_ip" {
+  type        = string
+  default     = "10.0.1.100"
+  description = "DB server private ip address"
+}
