@@ -1,9 +1,9 @@
 variable "number_of_instances" {
-  default       = "1"
+  default       = "2"
   description   = "number of instances in the scaleset"
 }
 variable "resource_group_name" {
-  default       = "myinstance"
+  default       = "weight-tracker"
   description = "name of the resource group."
 }
 variable "resource_group_location" {
@@ -14,21 +14,21 @@ variable "resource_group_location" {
 #vm size
 #high_availability psql mode (yes or no)
 
+variable "vm_username" {
+  type        = string
+  default     = "adminos"
+  description = "Username of OS in the vms created"
+}
+
 variable "vm_password" {
   type        = string
   default     = "M6vUgnHzVY583Xn"
   description = "Password of OS in the vms created"
 }
 
-variable "vm_username" {
-  type        = string
-  default     = "Manager"
-  description = "Username of OS in the vms created"
-}
-
 variable "db_username" {
   type        = string
-  default     = "postgres"
+  default     = "psqladmin"
   description = "login username for the Azure PostgreSQL manged service"
 }
 

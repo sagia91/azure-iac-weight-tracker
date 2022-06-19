@@ -1,13 +1,10 @@
-#resource "azurerm_maintenance_assignment_virtual_machine_scale_set" "" {
-
-resource "azurerm_orchestrated_virtual_machine_scale_set" "example" {
-  name                        = "example-VMSS"
-  location                    = azurerm_resource_group.rg.location
-  resource_group_name         = azurerm_resource_group.rg.name
+resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
+  name                        = "vmss"
+  location                    = azurerm_resource_group.main_resource_group.location
+  resource_group_name         = azurerm_resource_group.main_resource_group.name
   sku_name                    = "Standard_D2as_v5"
-  platform_fault_domain_count = 1 #2
-  #load_balancer_backend_address_pool_ids
-  instances = 1
+  platform_fault_domain_count = 1
+  instances = 3
   os_profile {
     linux_configuration {
       disable_password_authentication = false
@@ -23,10 +20,8 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "example" {
       subnet_id = azurerm_subnet.public_subnet.id
       version   = "IPv4"
       primary   = true
-      public_ip_address {
-        name = "pubip"
-      }
       load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.backend_pool.id]
+  #load_balancer_inbound_nat_rules_ids = [azurerm_lb_nat_pool.lb_nat_rule.id]
     }
 
   }
@@ -48,45 +43,60 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "example" {
   ]
 }
 
+resource "azurerm_monitor_autoscale_setting" "example" {
+  name                = "myAutoscaleSetting"
+  resource_group_name = azurerm_resource_group.main_resource_group.name
+  location            = azurerm_resource_group.main_resource_group.location
+  target_resource_id  = azurerm_orchestrated_virtual_machine_scale_set.vmss.id
 
-resource "azurerm_virtual_machine_scale_set_extension" "example" {
-  name                         = "example"
-  virtual_machine_scale_set_id = azurerm_orchestrated_virtual_machine_scale_set.example.id
-  publisher                    = "Microsoft.Azure.Extensions"
-  type                         = "CustomScript"
-  type_handler_version         = "2.0"
-  settings = jsonencode({
-    "$schema" : "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-    "contentVersion" : "1.0.0.0",
-    "parameters" : {
-      "vmName" : {
-        "value" : "vm"
-      },
-      "extensionName" : {
-        "value" : "ext1"
-      },
-      "publisher" : {
-        "value" : "Microsoft.Azure.Extensions"
-      },
-      "type" : {
-        "value" : "CustomScript"
-      },
-      "typeHandlerVersion" : {
-        "value" : "2.0"
-      },
-      "settings" : {
-        "value" : {
-          "commandToExecute" : "sudo echo 'some text' >> ~/ss.bb"
-        }
+  profile {
+    name = "defaultProfile"
+
+    capacity {
+      default = 3
+      minimum = 3
+      maximum = 10
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "Percentage CPU"
+        metric_resource_id = azurerm_orchestrated_virtual_machine_scale_set.vmss.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 75
+        metric_namespace   = "microsoft.compute/virtualmachinescalesets"
+      }
+
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
       }
     }
-  })
+
+    rule {
+      metric_trigger {
+        metric_name        = "Percentage CPU"
+        metric_resource_id = azurerm_orchestrated_virtual_machine_scale_set.vmss.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "LessThan"
+        threshold          = 25
+      }
+
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
+      }
+    }
+  }
 }
-/*settings = jsonencode({
-  "fileUris" : [
-    "http://my-presale.com/webserver_install.sh"
-  ],
-  "commandToExecute" : "wget http://my-presale.com/webserver_install.sh && sh webserver_install.sh",
-  "skipDos2Unix": true
-  "dependsOn": ["Microsoft.Compute/virtualMachineScaleSets/example"]
-})*/

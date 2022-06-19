@@ -1,13 +1,13 @@
 resource "azurerm_virtual_network" "vnet" {
   name                = "vnet"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.main_resource_group.location
+  resource_group_name = azurerm_resource_group.main_resource_group.name
   address_space       = var.vnet_address_space
 }
 
 resource "azurerm_subnet" "public_subnet" {
   name                 = "public-subnet"
-  resource_group_name  = azurerm_resource_group.rg.name
+  resource_group_name  = azurerm_resource_group.main_resource_group.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = var.public_subnet_address_space
   lifecycle {
@@ -17,11 +17,11 @@ resource "azurerm_subnet" "public_subnet" {
 
 resource "azurerm_subnet" "db_subnet" {
   name                 = "db-subnet"
-  resource_group_name  = azurerm_resource_group.rg.name
+  resource_group_name  = azurerm_resource_group.main_resource_group.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = var.db_subnet_address_space
   service_endpoints    = ["Microsoft.Storage"]
-  /*delegation {
+  delegation {
     name = "sql-delegation"
     service_delegation {
       name    = "Microsoft.DBforPostgreSQL/flexibleServers"
@@ -29,7 +29,7 @@ resource "azurerm_subnet" "db_subnet" {
         "Microsoft.Network/virtualNetworks/subnets/join/action",
       ]
     }
-  }*/
+  }
   lifecycle {
         create_before_destroy = true
   }
@@ -37,8 +37,8 @@ resource "azurerm_subnet" "db_subnet" {
 
 resource "azurerm_network_security_group" "public_nsg" {
   name                = "public-nsg"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.main_resource_group.location
+  resource_group_name = azurerm_resource_group.main_resource_group.name
 
   security_rule {
     name                       = "8080"
@@ -56,8 +56,8 @@ resource "azurerm_network_security_group" "public_nsg" {
 
 resource "azurerm_network_security_group" "db_nsg" {
   name                = "db-subnet-nsg"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.main_resource_group.location
+  resource_group_name = azurerm_resource_group.main_resource_group.name
 
   security_rule {
     name                       = "sql-connection"
@@ -92,4 +92,12 @@ resource "azurerm_subnet_network_security_group_association" "public_subnet_nsg_
 resource "azurerm_subnet_network_security_group_association" "db_subnet_nsg_asso" {
   network_security_group_id = azurerm_network_security_group.db_nsg.id
   subnet_id                 = azurerm_subnet.db_subnet.id
+}
+
+resource "azurerm_public_ip"  "public_ip_lb" {
+    name = "public-ip-lb"
+    location = azurerm_resource_group.main_resource_group.location
+    resource_group_name = azurerm_resource_group.main_resource_group.name
+    allocation_method = "Static"
+    sku = "Standard"
 }

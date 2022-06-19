@@ -1,5 +1,10 @@
-output "ip" {
-  value = azurerm_public_ip.pubip_lb.ip_address
-  description = "The password for logging in to the database."
-  #sensitive   = true
+output "vm_username" {
+  value = var.vm_username
+  description = "virtual machines OS username"
+  sensitive   = true
+}
+output "vm_password" {
+  value = var.vm_password
+  description = "virtual machines OS password"
+  sensitive   = true
 }
