@@ -1,10 +1,10 @@
 resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
   name                        = "vmss"
-  location                    = azurerm_resource_group.main_resource_group.location
-  resource_group_name         = azurerm_resource_group.main_resource_group.name
+  location                    = var.location
+  resource_group_name         = var.resource_group_name
   sku_name                    = "Standard_D2as_v5"
   platform_fault_domain_count = 1
-  instances = 3
+  instances                   = 3
   os_profile {
     linux_configuration {
       disable_password_authentication = false
@@ -16,12 +16,11 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
     primary = true
     name    = "vmss-nic"
     ip_configuration {
-      name      = "testconfiguration1"
-      subnet_id = azurerm_subnet.public_subnet.id
-      version   = "IPv4"
-      primary   = true
-      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.backend_pool.id]
-  #load_balancer_inbound_nat_rules_ids = [azurerm_lb_nat_pool.lb_nat_rule.id]
+      name                                   = "vmss-ip-conf"
+      subnet_id                              = var.subnet_id
+      version                                = "IPv4"
+      primary                                = true
+      load_balancer_backend_address_pool_ids = [var.backend_pool_id]
     }
 
   }
@@ -37,16 +36,12 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
     storage_account_type = "Standard_LRS"
   }
   zones = ["1"]
-
-  depends_on = [
-    azurerm_lb_backend_address_pool.backend_pool
-  ]
 }
 
-resource "azurerm_monitor_autoscale_setting" "example" {
-  name                = "myAutoscaleSetting"
-  resource_group_name = azurerm_resource_group.main_resource_group.name
-  location            = azurerm_resource_group.main_resource_group.location
+resource "azurerm_monitor_autoscale_setting" "monitor_autoscale_setting_scale_set" {
+  name                = "monitor-autoscale-setting-scale-set"
+  resource_group_name = var.resource_group_name
+  location            = var.location
   target_resource_id  = azurerm_orchestrated_virtual_machine_scale_set.vmss.id
 
   profile {
