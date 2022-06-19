@@ -20,7 +20,7 @@ resource "azurerm_bastion_host" "bastion" {
   copy_paste_enabled  = true
 
   ip_configuration {
-    name                 = "configuration"
+    name                 = "ip-conf-bastion"
     subnet_id            = azurerm_subnet.bastion_subnet.id
     public_ip_address_id = azurerm_public_ip.public_id_bastion.id
   }

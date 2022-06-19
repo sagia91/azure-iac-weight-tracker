@@ -33,7 +33,7 @@ resource "azurerm_lb_probe" "lb_probe" {
   loadbalancer_id     = azurerm_lb.load_balancer.id
   name                = "lb-probe"
   protocol            = "Tcp"
-  port                = 20202
+  port                = 8080
   interval_in_seconds = 5
   number_of_probes    = var.number_of_instances
 }

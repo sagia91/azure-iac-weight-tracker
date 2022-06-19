@@ -11,7 +11,7 @@ resource "azurerm_subnet" "public_subnet" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = var.public_subnet_address_space
   lifecycle {
-        create_before_destroy = true
+    create_before_destroy = true
   }
 }
 
@@ -24,14 +24,14 @@ resource "azurerm_subnet" "db_subnet" {
   delegation {
     name = "sql-delegation"
     service_delegation {
-      name    = "Microsoft.DBforPostgreSQL/flexibleServers"
+      name = "Microsoft.DBforPostgreSQL/flexibleServers"
       actions = [
         "Microsoft.Network/virtualNetworks/subnets/join/action",
       ]
     }
   }
   lifecycle {
-        create_before_destroy = true
+    create_before_destroy = true
   }
 }
 
@@ -94,10 +94,10 @@ resource "azurerm_subnet_network_security_group_association" "db_subnet_nsg_asso
   subnet_id                 = azurerm_subnet.db_subnet.id
 }
 
-resource "azurerm_public_ip"  "public_ip_lb" {
-    name = "public-ip-lb"
-    location = azurerm_resource_group.main_resource_group.location
-    resource_group_name = azurerm_resource_group.main_resource_group.name
-    allocation_method = "Static"
-    sku = "Standard"
+resource "azurerm_public_ip" "public_ip_lb" {
+  name                = "public-ip-lb"
+  location            = azurerm_resource_group.main_resource_group.location
+  resource_group_name = azurerm_resource_group.main_resource_group.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }

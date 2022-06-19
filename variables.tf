@@ -1,18 +1,15 @@
 variable "number_of_instances" {
-  default       = "2"
-  description   = "number of instances in the scaleset"
+  default     = "3"
+  description = "number of instances in the scale set"
 }
 variable "resource_group_name" {
-  default       = "weight-tracker"
+  default     = "weight-tracker"
   description = "name of the resource group."
 }
 variable "resource_group_location" {
-  default       = "West Europe"
+  default     = "West Europe"
   description = "Location of the resource group."
 }
-
-#vm size
-#high_availability psql mode (yes or no)
 
 variable "vm_username" {
   type        = string
@@ -39,19 +36,19 @@ variable "db_password" {
 }
 
 variable "vnet_address_space" {
-  type        = list
+  type        = list(any)
   default     = ["10.0.0.0/16"]
   description = "address space for the vnet"
 }
 
 variable "public_subnet_address_space" {
-  type        = list
+  type        = list(any)
   default     = ["10.0.0.0/24"]
   description = "address space for the public subnet"
 }
 
 variable "db_subnet_address_space" {
-  type        = list
+  type        = list(any)
   default     = ["10.0.1.0/24"]
   description = "address space for the private subnet"
 }

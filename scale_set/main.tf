@@ -1,10 +1,13 @@
+#scal eset module with load balancer connectivity
+
 resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
   name                        = "vmss"
   location                    = var.location
   resource_group_name         = var.resource_group_name
   sku_name                    = "Standard_D2as_v5"
   platform_fault_domain_count = 1
-  instances                   = 3
+  instances                   = var.number_of_instances
+  zones                       = ["1"]
   os_profile {
     linux_configuration {
       disable_password_authentication = false
@@ -22,8 +25,8 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
       primary                                = true
       load_balancer_backend_address_pool_ids = [var.backend_pool_id]
     }
-
   }
+
   source_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
@@ -35,7 +38,6 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  zones = ["1"]
 }
 
 resource "azurerm_monitor_autoscale_setting" "monitor_autoscale_setting_scale_set" {

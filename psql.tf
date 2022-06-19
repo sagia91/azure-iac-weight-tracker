@@ -12,22 +12,22 @@ resource "azurerm_private_dns_zone_virtual_network_link" "link_vnet_db_dns_zone"
 }
 
 resource "azurerm_postgresql_flexible_server" "managed_db_server" {
-  name                   = "managed-db-server"
-  resource_group_name    = azurerm_resource_group.main_resource_group.name
-  location               = azurerm_resource_group.main_resource_group.location
-  version                = "11"
-  delegated_subnet_id    = azurerm_subnet.db_subnet.id
-  private_dns_zone_id    = azurerm_private_dns_zone.db_private_dns_zone.id
-  administrator_login    = var.db_username
-  administrator_password = var.db_password
-  zone                   = "1"
-  storage_mb             = 32768
-  sku_name               = "GP_Standard_D2s_v3"
+  name                         = "managed-db-server"
+  resource_group_name          = azurerm_resource_group.main_resource_group.name
+  location                     = azurerm_resource_group.main_resource_group.location
+  version                      = "11"
+  geo_redundant_backup_enabled = true
+  delegated_subnet_id          = azurerm_subnet.db_subnet.id
+  private_dns_zone_id          = azurerm_private_dns_zone.db_private_dns_zone.id
+  administrator_login          = var.db_username
+  administrator_password       = var.db_password
+  zone                         = "1"
+  storage_mb                   = 32768
+  sku_name                     = "GP_Standard_D2s_v3"
 
-  #high availability capabilities for the server
-  /*high_availability {
+  high_availability {
     mode = "ZoneRedundant"
-  }*/
+  }
   depends_on = [azurerm_private_dns_zone_virtual_network_link.link_vnet_db_dns_zone]
 }
 

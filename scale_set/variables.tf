@@ -25,5 +25,10 @@ variable "subnet_id" {
 
 variable "backend_pool_id" {
   type        = string
-  description = "id of the backend pool of the load balancer to be added"
+  description = "id of the backend pool of the load balancer"
+}
+
+variable "number_of_instances" {
+  type        = string
+  description = "number of instances in the scale set"
 }
