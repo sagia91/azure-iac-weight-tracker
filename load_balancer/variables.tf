@@ -8,28 +8,19 @@ variable "location" {
   description = "location for the scale set"
 }
 
-variable "vm_username" {
+variable "lb_private_ip" {
   type        = string
-  description = "Username of OS in the VMs created"
+  description = "DB server private ip address"
 }
 
-variable "subnet_id" {
+variable "public_ip_lb_id" {
   type        = string
-  description = "id of the subnet for the scaleset in the virtual network"
-}
-
-variable "backend_pool_id" {
-  type        = string
-  description = "id of the backend pool of the load balancer"
+  description = "id of the public ip address to associate with this lb"
 }
 
 variable "number_of_instances" {
   type        = string
   description = "number of instances in the scale set"
-}
-
-variable "vm_sku" {
-  description = "VMs hardware sku"
 }
 
 variable "suffix" {

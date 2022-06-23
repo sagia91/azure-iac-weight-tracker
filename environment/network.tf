@@ -1,12 +1,12 @@
 resource "azurerm_virtual_network" "vnet" {
-  name                = "vnet"
+  name                = "vnet${var.suffix}"
   location            = azurerm_resource_group.main_resource_group.location
   resource_group_name = azurerm_resource_group.main_resource_group.name
   address_space       = var.vnet_address_space
 }
 
 resource "azurerm_subnet" "public_subnet" {
-  name                 = "public-subnet"
+  name                 = "public-subnet${var.suffix}"
   resource_group_name  = azurerm_resource_group.main_resource_group.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = var.public_subnet_address_space
@@ -16,7 +16,7 @@ resource "azurerm_subnet" "public_subnet" {
 }
 
 resource "azurerm_subnet" "db_subnet" {
-  name                 = "db-subnet"
+  name                 = "db-subnet${var.suffix}"
   resource_group_name  = azurerm_resource_group.main_resource_group.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = var.db_subnet_address_space
@@ -35,8 +35,13 @@ resource "azurerm_subnet" "db_subnet" {
   }
 }
 
+# get self ip from https service
+data "http" "self_ip" {
+  url = "https://ifconfig.me/ip"
+}
+
 resource "azurerm_network_security_group" "public_nsg" {
-  name                = "public-nsg"
+  name                = "public-nsg${var.suffix}"
   location            = azurerm_resource_group.main_resource_group.location
   resource_group_name = azurerm_resource_group.main_resource_group.name
 
@@ -51,11 +56,23 @@ resource "azurerm_network_security_group" "public_nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
+  security_rule {
+    name                       = "SSH"
+    priority                   = 101
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = data.http.self_ip.body
+    destination_address_prefix = "*"
+  }
 }
 
 
 resource "azurerm_network_security_group" "db_nsg" {
-  name                = "db-subnet-nsg"
+  name                = "db-subnet-nsg${var.suffix}"
   location            = azurerm_resource_group.main_resource_group.location
   resource_group_name = azurerm_resource_group.main_resource_group.name
 
@@ -95,7 +112,7 @@ resource "azurerm_subnet_network_security_group_association" "db_subnet_nsg_asso
 }
 
 resource "azurerm_public_ip" "public_ip_lb" {
-  name                = "public-ip-lb"
+  name                = "public-ip-lb${var.suffix}"
   location            = azurerm_resource_group.main_resource_group.location
   resource_group_name = azurerm_resource_group.main_resource_group.name
   allocation_method   = "Static"

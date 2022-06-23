@@ -1,19 +1,19 @@
 resource "azurerm_lb" "load_balancer" {
-  name                = "load-balancer"
-  location            = azurerm_resource_group.main_resource_group.location
-  resource_group_name = azurerm_resource_group.main_resource_group.name
+  name                = "load-balancer${var.suffix}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
   sku                 = "Standard"
 
   frontend_ip_configuration {
-    name                 = "frontend-ip-conf-lb"
+    name                 = "frontend-ip-conf-lb${var.suffix}"
     private_ip_address   = var.lb_private_ip
-    public_ip_address_id = azurerm_public_ip.public_ip_lb.id
+    public_ip_address_id = var.public_ip_lb_id
   }
 }
 
 resource "azurerm_lb_backend_address_pool" "backend_pool" {
   loadbalancer_id = azurerm_lb.load_balancer.id
-  name            = "backend-pool"
+  name            = "backend-pool${var.suffix}"
 }
 
 resource "azurerm_lb_rule" "lb_in_rule" {
@@ -22,7 +22,7 @@ resource "azurerm_lb_rule" "lb_in_rule" {
   protocol                       = "Tcp"
   frontend_port                  = "8080"
   backend_port                   = "8080"
-  frontend_ip_configuration_name = "frontend-ip-conf-lb"
+  frontend_ip_configuration_name = azurerm_lb.load_balancer.frontend_ip_configuration[0].name
   enable_floating_ip             = false
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.backend_pool.id]
   idle_timeout_in_minutes        = 5
@@ -36,4 +36,15 @@ resource "azurerm_lb_probe" "lb_probe" {
   port                = 8080
   interval_in_seconds = 5
   number_of_probes    = var.number_of_instances
+}
+
+resource "azurerm_lb_nat_pool" "lb-nat-pool" {
+  resource_group_name            = var.resource_group_name
+  loadbalancer_id                = azurerm_lb.load_balancer.id
+  name                           = "lb-nat-pool-ssh-access"
+  protocol                       = "Tcp"
+  frontend_port_start            = "5001"
+  frontend_port_end              = "500${var.number_of_instances}"
+  backend_port                   = 22
+  frontend_ip_configuration_name = azurerm_lb.load_balancer.frontend_ip_configuration[0].name
 }

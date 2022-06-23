@@ -1,10 +1,16 @@
-#scal eset module with load balancer connectivity
+#scale set module with load balancer connectivity
+
+resource "random_password" "vmss_password" {
+  length           = 12
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
 
 resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
-  name                        = "vmss"
+  name                        = "vmss${var.suffix}"
   location                    = var.location
   resource_group_name         = var.resource_group_name
-  sku_name                    = "Standard_D2as_v5"
+  sku_name                    = var.vm_sku
   platform_fault_domain_count = 1
   instances                   = var.number_of_instances
   zones                       = ["1"]
@@ -12,7 +18,7 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
     linux_configuration {
       disable_password_authentication = false
       admin_username                  = var.vm_username
-      admin_password                  = var.vm_password
+      admin_password                  = random_password.vmss_password.result
     }
   }
   network_interface {
