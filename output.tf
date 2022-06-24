@@ -4,24 +4,38 @@ output "vm_username" {
   sensitive   = true
 }
 
-output "vm_password" {
+output "vm_password_prod" {
   value       = module.environment-prod.vm_password
   description = "virtual machines OS password"
   sensitive   = true
 }
 
-output "number_of_instances" {
-  value       = var.number_of_instances
-  description = "number of instances in the scale set"
-}
-
-output "psql_server_password" {
-  description = "psql server password"
-  value       = module.environment-prod.psql_server_password
+output "vm_password_stg" {
+  value       = module.environment-stg.vm_password
+  description = "virtual machines OS password"
   sensitive   = true
 }
 
-output "public_ip" {
-  description = "public ip of the lb"
+output "psql_server_password_stg" {
+  description = "psql server password"
+  value       = module.environment-stg.psql_server_password
+  sensitive   = true
+}
+
+output "pub_ip_stg" {
+  description = "public ip stg lb"
+  value       = module.environment-stg.public_ip
+  sensitive   = true
+}
+
+output "pub_ip_prod" {
+  description = "public ip prod lb"
   value       = module.environment-prod.public_ip
+  sensitive   = true
+}
+
+output "psql_server_password_prod" {
+  description = "psql server password"
+  value       = module.environment-prod.psql_server_password
+  sensitive   = true
 }

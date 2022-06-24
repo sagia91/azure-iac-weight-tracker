@@ -3,7 +3,7 @@ module "environment-prod" {
   db_subnet_address_space = var.db_subnet_address_space
   db_username = var.db_username
   lb_private_ip = var.lb_private_ip
-  number_of_instances = var.number_of_instances
+  number_of_instances = var.number_of_instances_prod
   public_subnet_address_space = var.public_subnet_address_space
   resource_group_location = var.resource_group_location
   resource_group_name = var.resource_group_name
@@ -20,9 +20,9 @@ module "environment-stg" {
   db_subnet_address_space = var.db_subnet_address_space
   db_username = var.db_username
   lb_private_ip = var.lb_private_ip
-  number_of_instances = var.number_of_instances
+  number_of_instances = var.number_of_instances_stg
   public_subnet_address_space = var.public_subnet_address_space
-  resource_group_location = var.resource_group_location
+  resource_group_location = "Australia East"
   resource_group_name = var.resource_group_name
   vm_username = var.vm_username
   vnet_address_space = var.vnet_address_space

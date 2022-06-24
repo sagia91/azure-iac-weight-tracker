@@ -22,7 +22,7 @@ resource "azurerm_postgresql_flexible_server" "managed_db_server" {
   resource_group_name          = var.resource_group_name
   location                     = var.location
   version                      = "11"
-  geo_redundant_backup_enabled = true
+  #geo_redundant_backup_enabled = true
   delegated_subnet_id          = var.db_subnet_id
   private_dns_zone_id          = azurerm_private_dns_zone.db_private_dns_zone.id
   administrator_login          = var.db_username

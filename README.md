@@ -41,9 +41,10 @@ No resources.
 | <a name="input_env1-vm_sku"></a> [env1-vm\_sku](#input\_env1-vm\_sku) | VMs hardware sku | `string` | `"Standard_D2as_v5"` | no |
 | <a name="input_env2-psql_sku"></a> [env2-psql\_sku](#input\_env2-psql\_sku) | psql server hardware sku | `string` | `"GP_Standard_B2s"` | no |
 | <a name="input_env2-suffix"></a> [env2-suffix](#input\_env2-suffix) | suffix for the second environment | `string` | `"-stg"` | no |
-| <a name="input_env2-vm_sku"></a> [env2-vm\_sku](#input\_env2-vm\_sku) | VMs hardware sku | `string` | `"Standard_D2as_v5"` | no |
+| <a name="input_env2-vm_sku"></a> [env2-vm\_sku](#input\_env2-vm\_sku) | VMs hardware sku | `string` | `"Standard_DS1_v2"` | no |
 | <a name="input_lb_private_ip"></a> [lb\_private\_ip](#input\_lb\_private\_ip) | DB server private ip address | `string` | `"10.0.1.100"` | no |
-| <a name="input_number_of_instances"></a> [number\_of\_instances](#input\_number\_of\_instances) | number of instances in the scale set | `string` | `"3"` | no |
+| <a name="input_number_of_instances_prod"></a> [number\_of\_instances\_prod](#input\_number\_of\_instances\_prod) | number of instances in the scale set prod | `string` | `"3"` | no |
+| <a name="input_number_of_instances_stg"></a> [number\_of\_instances\_stg](#input\_number\_of\_instances\_stg) | number of instances in the scale set stg | `string` | `"3"` | no |
 | <a name="input_public_subnet_address_space"></a> [public\_subnet\_address\_space](#input\_public\_subnet\_address\_space) | address space for the public subnet | `list(any)` | <pre>[<br>  "10.0.0.0/24"<br>]</pre> | no |
 | <a name="input_resource_group_location"></a> [resource\_group\_location](#input\_resource\_group\_location) | Location of the resource group. | `string` | `"West Europe"` | no |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | name of the resource group. | `string` | `"weight-tracker"` | no |
@@ -54,9 +55,11 @@ No resources.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_number_of_instances"></a> [number\_of\_instances](#output\_number\_of\_instances) | number of instances in the scale set |
-| <a name="output_psql_server_password"></a> [psql\_server\_password](#output\_psql\_server\_password) | psql server password |
-| <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | public ip of the lb |
-| <a name="output_vm_password"></a> [vm\_password](#output\_vm\_password) | virtual machines OS password |
+| <a name="output_psql_server_password_prod"></a> [psql\_server\_password\_prod](#output\_psql\_server\_password\_prod) | psql server password |
+| <a name="output_psql_server_password_stg"></a> [psql\_server\_password\_stg](#output\_psql\_server\_password\_stg) | psql server password |
+| <a name="output_pub_ip_prod"></a> [pub\_ip\_prod](#output\_pub\_ip\_prod) | public ip prod lb |
+| <a name="output_pub_ip_stg"></a> [pub\_ip\_stg](#output\_pub\_ip\_stg) | public ip stg lb |
+| <a name="output_vm_password_prod"></a> [vm\_password\_prod](#output\_vm\_password\_prod) | virtual machines OS password |
+| <a name="output_vm_password_stg"></a> [vm\_password\_stg](#output\_vm\_password\_stg) | virtual machines OS password |
 | <a name="output_vm_username"></a> [vm\_username](#output\_vm\_username) | virtual machines OS username |
 <!-- END_TF_DOCS -->

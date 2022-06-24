@@ -43,7 +43,7 @@ resource "azurerm_lb_nat_pool" "lb-nat-pool" {
   name                           = "ssh"
   protocol                       = "Tcp"
   frontend_port_start            = "6001"
-  frontend_port_end              = "600${var.number_of_instances}"
+  frontend_port_end              = "6100"
   backend_port                   = 22
   frontend_ip_configuration_name = "frontend-ip-conf-lb${var.suffix}"
 }

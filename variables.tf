@@ -1,6 +1,11 @@
-variable "number_of_instances" {
+variable "number_of_instances_stg" {
   default     = "3"
-  description = "number of instances in the scale set"
+  description = "number of instances in the scale set stg"
+}
+
+variable "number_of_instances_prod" {
+  default     = "3"
+  description = "number of instances in the scale set prod"
 }
 
 variable "env1-suffix" {
@@ -20,7 +25,7 @@ variable "env1-psql_sku" {
 
 variable "env2-vm_sku" {
   description = "VMs hardware sku"
-  default = "Standard_D2as_v5"
+  default = "Standard_DS1_v2"
 }
 
 variable "env2-psql_sku" {
