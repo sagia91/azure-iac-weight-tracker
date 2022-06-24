@@ -2,10 +2,42 @@ variable "number_of_instances" {
   default     = "3"
   description = "number of instances in the scale set"
 }
+
+variable "env1-suffix" {
+  default     = "-prod"
+  description = "suffix for the first environment"
+}
+
+variable "env1-vm_sku" {
+  description = "VMs hardware sku"
+  default = "Standard_D2as_v5"
+}
+
+variable "env1-psql_sku" {
+  description = "psql server hardware sku"
+  default = "GP_Standard_D2s_v3"
+}
+
+variable "env2-vm_sku" {
+  description = "VMs hardware sku"
+  default = "Standard_D2as_v5"
+}
+
+variable "env2-psql_sku" {
+  description = "psql server hardware sku"
+  default = "GP_Standard_B2s"
+}
+
+variable "env2-suffix" {
+  default     = "-stg"
+  description = "suffix for the second environment"
+}
+
 variable "resource_group_name" {
   default     = "weight-tracker"
   description = "name of the resource group."
 }
+
 variable "resource_group_location" {
   default     = "West Europe"
   description = "Location of the resource group."
@@ -17,24 +49,11 @@ variable "vm_username" {
   description = "Username of OS in the vms created"
 }
 
-variable "vm_password" {
-  type        = string
-  default     = "M6vUgnHzVY583Xn"
-  description = "Password of OS in the vms created"
-}
-
 variable "db_username" {
   type        = string
   default     = "psqladmin"
   description = "login username for the Azure PostgreSQL manged service"
 }
-
-variable "db_password" {
-  type        = string
-  default     = "AeTqpTatQeKKJCW"
-  description = "login Password for the Azure PostgreSQL manged service"
-}
-
 variable "vnet_address_space" {
   type        = list(any)
   default     = ["10.0.0.0/16"]

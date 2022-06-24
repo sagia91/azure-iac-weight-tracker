@@ -6,32 +6,15 @@ resource "random_password" "vmss_password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
-  name                        = "vmss${var.suffix}"
-  location                    = var.location
-  resource_group_name         = var.resource_group_name
-  sku_name                    = var.vm_sku
-  platform_fault_domain_count = 1
-  instances                   = var.number_of_instances
-  zones                       = ["1"]
-  os_profile {
-    linux_configuration {
-      disable_password_authentication = false
-      admin_username                  = var.vm_username
-      admin_password                  = random_password.vmss_password.result
-    }
-  }
-  network_interface {
-    primary = true
-    name    = "vmss-nic"
-    ip_configuration {
-      name                                   = "vmss-ip-conf"
-      subnet_id                              = var.subnet_id
-      version                                = "IPv4"
-      primary                                = true
-      load_balancer_backend_address_pool_ids = [var.backend_pool_id]
-    }
-  }
+resource "azurerm_linux_virtual_machine_scale_set" "vmss" {
+  name                = "vmss${var.suffix}"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  sku                 = var.vm_sku
+  instances           = var.number_of_instances
+  admin_username      = var.vm_username
+  admin_password      = random_password.vmss_password.result
+  disable_password_authentication = false
 
   source_image_reference {
     publisher = "Canonical"
@@ -41,8 +24,21 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
   }
 
   os_disk {
-    caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
+    caching              = "ReadWrite"
+  }
+
+  network_interface {
+    primary = true
+    name    = "vmss-nic"
+    ip_configuration {
+      name                                   = "vmss-ip-conf"
+      subnet_id                              = var.subnet_id
+      version                                = "IPv4"
+      primary                                = true
+      load_balancer_backend_address_pool_ids = [var.backend_pool_id]
+      load_balancer_inbound_nat_rules_ids    = [var.ssh_rule_id]
+    }
   }
 }
 
@@ -50,7 +46,7 @@ resource "azurerm_monitor_autoscale_setting" "monitor_autoscale_setting_scale_se
   name                = "monitor-autoscale-setting-scale-set"
   resource_group_name = var.resource_group_name
   location            = var.location
-  target_resource_id  = azurerm_orchestrated_virtual_machine_scale_set.vmss.id
+  target_resource_id  = azurerm_linux_virtual_machine_scale_set.vmss.id
 
   profile {
     name = "defaultProfile"
@@ -64,7 +60,7 @@ resource "azurerm_monitor_autoscale_setting" "monitor_autoscale_setting_scale_se
     rule {
       metric_trigger {
         metric_name        = "Percentage CPU"
-        metric_resource_id = azurerm_orchestrated_virtual_machine_scale_set.vmss.id
+        metric_resource_id = azurerm_linux_virtual_machine_scale_set.vmss.id
         time_grain         = "PT1M"
         statistic          = "Average"
         time_window        = "PT5M"
@@ -85,7 +81,7 @@ resource "azurerm_monitor_autoscale_setting" "monitor_autoscale_setting_scale_se
     rule {
       metric_trigger {
         metric_name        = "Percentage CPU"
-        metric_resource_id = azurerm_orchestrated_virtual_machine_scale_set.vmss.id
+        metric_resource_id = azurerm_linux_virtual_machine_scale_set.vmss.id
         time_grain         = "PT1M"
         statistic          = "Average"
         time_window        = "PT5M"

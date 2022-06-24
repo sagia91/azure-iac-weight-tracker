@@ -5,5 +5,5 @@ output "backend_pool_id" {
 
 output "ssh_rule_id" {
   description = "ssh lb nat pool rule id"
-  value       = azurerm_lb_rule.lb_in_rule.id
+  value       = azurerm_lb_nat_pool.lb-nat-pool.id
 }

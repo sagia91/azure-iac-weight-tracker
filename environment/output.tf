@@ -9,3 +9,13 @@ output "vm_password" {
   description = "virtual machines OS password"
   sensitive   = true
 }
+
+output "psql_server_password" {
+  description = "psql server password"
+  value       = module.psql_server.psql_server_password
+}
+
+output "public_ip" {
+  description = "public ip of the lb"
+  value       = azurerm_public_ip.public_ip_lb.ip_address
+}

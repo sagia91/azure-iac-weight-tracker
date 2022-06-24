@@ -1,7 +1,7 @@
 variable "address_prefix" {
   type        = string
   description = "address prefix in the vnet for the bastion server"
-  default = "10.0.10.0/24"
+  default     = "10.0.10.0/24"
 }
 
 variable "resource_group_name" {
