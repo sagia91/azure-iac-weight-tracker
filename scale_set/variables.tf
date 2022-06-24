@@ -35,3 +35,7 @@ variable "vm_sku" {
 variable "suffix" {
   description = "suffix for resources names"
 }
+
+variable "ssh_rule_id" {
+  description = "ssh lb nat pool rule id"
+}

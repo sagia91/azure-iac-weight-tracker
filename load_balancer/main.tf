@@ -23,7 +23,6 @@ resource "azurerm_lb_rule" "lb_in_rule" {
   frontend_port                  = "8080"
   backend_port                   = "8080"
   frontend_ip_configuration_name = azurerm_lb.load_balancer.frontend_ip_configuration[0].name
-  enable_floating_ip             = false
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.backend_pool.id]
   idle_timeout_in_minutes        = 5
   probe_id                       = azurerm_lb_probe.lb_probe.id
@@ -41,10 +40,10 @@ resource "azurerm_lb_probe" "lb_probe" {
 resource "azurerm_lb_nat_pool" "lb-nat-pool" {
   resource_group_name            = var.resource_group_name
   loadbalancer_id                = azurerm_lb.load_balancer.id
-  name                           = "lb-nat-pool-ssh-access"
+  name                           = "ssh"
   protocol                       = "Tcp"
-  frontend_port_start            = "5001"
-  frontend_port_end              = "500${var.number_of_instances}"
+  frontend_port_start            = "5000"
+  frontend_port_end              = "5100"
   backend_port                   = 22
-  frontend_ip_configuration_name = azurerm_lb.load_balancer.frontend_ip_configuration[0].name
+  frontend_ip_configuration_name = "frontend-ip-conf-lb${var.suffix}"
 }
